@@ -1,0 +1,25 @@
+﻿@model JobsWeb.Models.DemoModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", name = "thisform" }))
+{
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        <button type="submit" class="btn btn-default">Queue New Job</button>
+    </div>
+}
+<div>
+    @await Component.InvokeAsync("RealTimeStatus", new
+    {
+        id = Model.Id,
+        url = "/background", //"http://localhost:7071",
+        onSuccess = "messageComplete" //"importComplete"
+    })
+</div>
+

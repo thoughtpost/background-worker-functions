@@ -1,0 +1,115 @@
+﻿@model Thoughtpost.Background.Models.ResponseModel
+
+<script>
+</script>
+
+<style>
+.progress {
+  width: 100%;
+  background-color: grey;
+}
+
+.bar {
+  width: 1%;
+  height: 30px;
+  background-color: green;
+  color: white;
+  text-align: center;
+}
+</style>
+
+<div class="card@(Model.Id)">
+    <div id="message@(Model.Id)"></div>
+    <div id="progress@(Model.Id)" class="progress">
+        <div id="bar@(Model.Id)" class="bar"></div>
+    </div>
+</div>
+
+<script defer>
+
+function obj@(Model.Id)() {
+
+    var self = this;
+
+    self.ready = false;
+    self.percent = @Model.Percent;
+    self.message = '@(Model.Message)';
+
+        self.updateUI = function () {
+
+            var elem = document.getElementById("bar@(Model.Id)"); 
+            var textelem = document.getElementById("message@(Model.Id)"); 
+            textelem.innerHTML = self.message;
+
+            elem.style.width = self.percent + '%'; 
+            elem.innerHTML = self.percent * 1 + '%';
+        };
+
+        self.statusRelayUpdate = function (message) {
+            console.log(message);
+
+            self.message = message.message;
+
+            var id = setInterval(frame, 10);
+            function frame() {
+                if (self.percent >= message.percent) {
+                    clearInterval(id);
+                }
+                else {
+                    self.percent++; 
+
+                    self.updateUI();
+                }
+            }
+        };
+
+        self.callback = function () {
+
+            self.connection = new signalR.HubConnectionBuilder()
+                .withUrl('@Model.Url') //.withUrl('Model.Url/api')       
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            self.connection.on('statusRelayUpdate', self.statusRelayUpdate);
+
+            self.connection.onclose(() => console.log('disconnected'));
+
+            console.log('connecting...');
+
+            self.connection.start()
+                    .then(() => {
+                        self.ready = true;
+                        console.log(self.connection);
+
+                        self.connection.invoke("subscribe", '@Model.Id')
+                            .then((response) => {
+                                self.message = response.message;
+                                self.percent = response.percent;
+
+                                self.updateUI();
+                            }
+                        ).catch(err => console.error(err.toString()));
+                    }
+                )
+                .catch(console.error);
+            };
+
+        self.ready = function (callback) {
+            // in case the document is already rendered
+            if (document.readyState!='loading') callback();
+            // modern browsers
+            else if (document.addEventListener) document.addEventListener('DOMContentLoaded', callback);
+            // IE <= 8
+            else document.attachEvent('onreadystatechange', function(){
+                if (document.readyState=='complete') callback();
+            });
+        };
+};
+
+    var inst@(Model.Id) = new obj@(Model.Id)();
+    inst@(Model.Id).ready(inst@(Model.Id).callback);
+
+</script>
+
+<script defer src="@("https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.1.2/dist/browser/signalr.js")"></script>
+<script defer src="@("https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js")"></script>
