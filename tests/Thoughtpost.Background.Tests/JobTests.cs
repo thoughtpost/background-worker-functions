@@ -10,6 +10,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Thoughtpost.Azure;
 using Thoughtpost.Background.Models;
 
+using Thoughtpost.Background.Import;
+
 namespace Thoughtpost.Background.Tests
 {
     [TestClass]
@@ -43,10 +45,6 @@ namespace Thoughtpost.Background.Tests
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            //RedisCacheOptions options = new RedisCacheOptions();
-            //options.ConfigurationOptions = StackExchange.Redis.ConfigurationOptions.Parse(config["RedisConnectionString"]);
-
-            //IDistributedCache dc = new RedisCache(options);
             BlobAsyncDistributedCache<ResponseModel> dc = new BlobAsyncDistributedCache<ResponseModel>("cache",
                 config);
 
@@ -66,10 +64,6 @@ namespace Thoughtpost.Background.Tests
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            //RedisCacheOptions options = new RedisCacheOptions();
-            //options.ConfigurationOptions = StackExchange.Redis.ConfigurationOptions.Parse(config["RedisConnectionString"]);
-
-            //IDistributedCache dc = new RedisCache(options);
             BlobAsyncDistributedCache<ResponseModel> dc = new BlobAsyncDistributedCache<ResponseModel>("cache",
                 config);
 
@@ -77,5 +71,26 @@ namespace Thoughtpost.Background.Tests
 
             ResponseModel model = await cache.GetAsync("999");
         }
+
+
+        [TestMethod]
+        public async Task RunImport()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            StatusRelay relay = new StatusRelay(config);
+            await relay.Initialize();
+
+            ImportCsvJob job = new ImportCsvJob();
+
+            JobModel model = new JobModel();
+            model.Id = "IMPORTTEST";
+            model.Path = "People.csv";
+
+            ResponseModel response = await job.Run(model, relay, null, config);
+        }
+
     }
 }

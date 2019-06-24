@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Thoughtpost.Background.Models;
@@ -11,7 +12,8 @@ namespace Thoughtpost.Background.Jobs
 {
     public class SleepJob : IBackgroundJob
     {
-        public async Task<ResponseModel> Run(JobModel model, ILogger logger, StatusRelay relay)
+        public async Task<ResponseModel> Run(JobModel model, StatusRelay relay, ILogger logger, 
+            IConfiguration configuration)
         {
             ResponseModel response = new ResponseModel()
             {

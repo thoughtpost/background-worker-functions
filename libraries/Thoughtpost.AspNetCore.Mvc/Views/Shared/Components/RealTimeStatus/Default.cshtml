@@ -35,11 +35,15 @@ function obj@(Model.Id)() {
     self.percent = @Model.Percent;
     self.message = '@(Model.Message)';
 
-        self.updateUI = function () {
+        self.updateMessage = function () {
 
-            var elem = document.getElementById("bar@(Model.Id)"); 
             var textelem = document.getElementById("message@(Model.Id)"); 
             textelem.innerHTML = self.message;
+        };
+
+        self.updatePercent = function () {
+
+            var elem = document.getElementById("bar@(Model.Id)"); 
 
             elem.style.width = self.percent + '%'; 
             elem.innerHTML = self.percent * 1 + '%';
@@ -49,16 +53,22 @@ function obj@(Model.Id)() {
             console.log(message);
 
             self.message = message.message;
+            self.updateMessage();
 
-            var id = setInterval(frame, 10);
-            function frame() {
-                if (self.percent >= message.percent) {
-                    clearInterval(id);
-                }
-                else {
-                    self.percent++; 
+            if (self.percent < message.percent) {
+                self.percent = message.percent;
+                self.updatePercent();
+            } else {
+                var id = setInterval(frame, 10);
+                function frame() {
+                    if (self.percent >= message.percent) {
+                        clearInterval(id);
+                    }
+                    else {
+                        self.percent++;
 
-                    self.updateUI();
+                        self.updatePercent();
+                    }
                 }
             }
         };
@@ -86,7 +96,8 @@ function obj@(Model.Id)() {
                                 self.message = response.message;
                                 self.percent = response.percent;
 
-                                self.updateUI();
+                                self.updateMessage();
+                                self.updatePercent();
                             }
                         ).catch(err => console.error(err.toString()));
                     }

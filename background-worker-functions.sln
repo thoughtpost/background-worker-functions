@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobsConsoleApp", "samples\J
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thoughtpost.Background.Tests", "tests\Thoughtpost.Background.Tests\Thoughtpost.Background.Tests.csproj", "{D508A61B-7740-4379-935B-2060FEC3497D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thoughtpost.Background.Import", "libraries\Thoughtpost.Background.Import\Thoughtpost.Background.Import.csproj", "{E3C0784A-2E31-4F93-A59E-77C5FCE650CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{D508A61B-7740-4379-935B-2060FEC3497D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D508A61B-7740-4379-935B-2060FEC3497D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D508A61B-7740-4379-935B-2060FEC3497D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3C0784A-2E31-4F93-A59E-77C5FCE650CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3C0784A-2E31-4F93-A59E-77C5FCE650CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3C0784A-2E31-4F93-A59E-77C5FCE650CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3C0784A-2E31-4F93-A59E-77C5FCE650CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{11CB9F42-3459-41C7-BEAE-48D86C9AD9AC} = {86C75D8D-F5C3-488C-AB77-5C4C6EFD6C49}
 		{8FC8334B-7EA3-482A-B40B-164977DCC322} = {86C75D8D-F5C3-488C-AB77-5C4C6EFD6C49}
 		{D508A61B-7740-4379-935B-2060FEC3497D} = {EB2BA2FC-AC79-453D-8493-670B4DF326C9}
+		{E3C0784A-2E31-4F93-A59E-77C5FCE650CE} = {B907703A-002E-4EE6-8D17-BDA89BF89085}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D1BFCFBA-E3C2-41A5-BE3F-71F0BB0E9634}

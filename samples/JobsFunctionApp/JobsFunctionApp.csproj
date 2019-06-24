@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.28" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Thoughtpost.Background.Import\Thoughtpost.Background.Import.csproj" />
     <ProjectReference Include="..\..\libraries\Thoughtpost.Background\Thoughtpost.Background.csproj" />
   </ItemGroup>
   <ItemGroup>

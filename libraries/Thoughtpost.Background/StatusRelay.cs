@@ -92,21 +92,33 @@ namespace Thoughtpost.Background
         {
             await Initialize();
 
-            return await this.Cache.GetAsync(id);
+            if (this.Cache != null)
+            {
+                return await this.Cache.GetAsync(id);
+            }
+
+            return null;
         }
 
         public async Task SetStatusAsync(ResponseModel model)
         {
             await Initialize();
 
-            await this.Cache.SetAsync(model);
+            if (this.Cache != null)
+            {
+                await this.Cache.SetAsync(model);
+            }
         }
 
         public async Task SendStatusAsync(ResponseModel model)
         {
             await this.SetStatusAsync(model);
 
-            await this.hubConnection.InvokeCoreAsync("statusRelayUpdate", new object[] { model });
+            if ( this.hubConnection != null )
+            {
+                await this.hubConnection.InvokeCoreAsync("statusRelayUpdate", new object[] { model });
+            }
+
         }
 
         public void Dispose()

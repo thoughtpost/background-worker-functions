@@ -150,5 +150,137 @@ namespace Thoughtpost.Azure
 
             await blockBlob.DeleteAsync();
         }
+
+        #region Table
+        public Microsoft.WindowsAzure.Storage.Table.CloudTable GetTable(string tableName)
+        {
+            return this.Account.GetTable(tableName);
+        }
+
+        public async Task<TableResult> SaveToTable<E>(E entity, string tableName) where E : ITableEntity, new()
+        {
+            CloudTable t = Account.GetTable(tableName);
+
+            return await SaveToTable<E>(entity, t);
+        }
+
+        public async Task<TableResult> SaveToTable<E>(E entity, CloudTable table) where E : ITableEntity, new()
+        {
+            TableOperation insertOp = TableOperation.InsertOrMerge(entity);
+
+            return await table.ExecuteAsync(insertOp);
+        }
+
+        public async Task<TableResult> InternalSaveToTable<E>(E entity, string tableName) where E : ITableEntity, new()
+        {
+            CloudTable t = Account.GetTable(tableName);
+
+            TableOperation insertOp = TableOperation.InsertOrMerge(entity);
+
+            return await t.ExecuteAsync(insertOp);
+        }
+
+        public async Task<E> Get<E>(string pkey, string rkey, CloudTable table) where E : ITableEntity, new()
+        {
+            TableQuery<E> query = GetQuery<E>(pkey, rkey);
+            List<E> list = await Get<E>(query, 1, table);
+            if (list == null) return default(E);
+            return list.FirstOrDefault();
+        }
+
+        public async Task<E> Get<E>(string pkey, string rkey, string tableName) where E : ITableEntity, new()
+        {
+            CloudTable t = Account.GetTable(tableName);
+            TableQuery<E> query = GetQuery<E>(pkey, rkey);
+            List<E> list = await Get<E>(query, 1, t);
+            if (list == null) return default(E);
+            return list.FirstOrDefault();
+        }
+
+        public async Task<E> Get<E>(E obj, string tableName) where E : ITableEntity, new()
+        {
+            CloudTable t = Account.GetTable(tableName);
+            TableQuery<E> query = GetQuery<E>(obj.PartitionKey, obj.RowKey);
+            List<E> list = await Get<E>(query, 1, t);
+            if (list == null) return default(E);
+            return list.FirstOrDefault();
+        }
+
+
+        public async Task<List<E>> Get<E>(string pkey, CloudTable table) where E : ITableEntity, new()
+        {
+            TableQuery<E> query = GetQuery<E>(pkey);
+            List<E> list = await Get<E>(query, table);
+            if (list == null) return new List<E>();
+            return list;
+        }
+
+        public async Task<List<E>> Get<E>(TableQuery<E> rangeQuery, CloudTable table) where E : ITableEntity, new()
+        {
+            return await Get(rangeQuery, -1, table);
+        }
+
+        public async Task<List<E>> Get<E>(string pkey, string tableName) where E : ITableEntity, new()
+        {
+            CloudTable t = Account.GetTable(tableName);
+            return await Get<E>(pkey, t);
+        }
+
+        public async Task<List<E>> Get<E>(TableQuery<E> rangeQuery, 
+            int limit, CloudTable table) where E : ITableEntity, new()
+        {
+            int count = 0;
+            List<E> results = new List<E>();
+
+            if (limit > 0)
+            {
+                rangeQuery = rangeQuery.Take(limit);
+            }
+
+            TableContinuationToken token = null;
+            TableQuerySegment<E> segment = await table.ExecuteQuerySegmentedAsync(rangeQuery, token);
+
+            do
+            {
+                token = segment.ContinuationToken;
+
+                // Loop through the results, displaying information about the entity.
+                foreach (E entity in segment)
+                {
+                    results.Add(entity);
+
+                    count++;
+                    if (limit > 0 && count >= limit) break;
+                }
+
+            } while (token != null);
+
+            return results;
+        }
+
+        protected TableQuery<E> GetQuery<E>(string pk, string rk) where E : ITableEntity, new()
+        {
+            // Create the table query.
+            TableQuery<E> rangeQuery = new TableQuery<E>().Where(
+                TableQuery.CombineFilters(
+                    TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, pk),
+                    TableOperators.And,
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, rk)
+                )
+            );
+
+            return rangeQuery;
+        }
+
+        protected TableQuery<E> GetQuery<E>(object key) where E : ITableEntity, new()
+        {
+            // Create the table query.
+            TableQuery<E> rangeQuery = new TableQuery<E>().Where(
+                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, key.ToString())
+            );
+
+            return rangeQuery;
+        }
+        #endregion
     }
 }

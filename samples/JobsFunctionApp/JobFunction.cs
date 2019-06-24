@@ -37,8 +37,14 @@ namespace JobsFunctionApp
         {
             IBackgroundJob job = null;
 
-            switch (model.Job)
+            switch (model.Job.ToLower())
             {
+                case "import":
+                    {
+                        job = new Thoughtpost.Background.Import.ImportCsvJob();
+                    }
+                    break;
+
                 default:
                     {
                         job = new SleepJob();
@@ -115,7 +121,7 @@ namespace JobsFunctionApp
                 StatusRelay relay = new StatusRelay(config);
                 await relay.Initialize();
 
-                response = await job.Run(model, logger, relay);
+                response = await job.Run(model, relay, logger, config );
 
             }
             catch (Exception ex)

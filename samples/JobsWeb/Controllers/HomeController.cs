@@ -33,23 +33,47 @@ namespace JobsWeb.Controllers
             return View(model);
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> Index(DemoModel model)
+        public async Task<IActionResult> Index(DemoModel model, string submit)
+        {
+            JobModel job = new JobModel();
+            job.Id = model.Id;
+
+            switch (submit)
+            {
+                case "import":
+                    {
+                        job.Job = "Import";
+                        job.Path = "People.csv";
+                    }
+                    break;
+
+                case "sleep":
+                default:
+                    {
+                        job.Job = "Sleep";
+                        job.Details = "Power sleeping";
+                        job.Path = "XYZ";
+                        job.Parameters = new System.Collections.Generic.Dictionary<string, string>();
+                        job.Parameters.Add("Iterations", "100");
+                        job.Parameters.Add("Delay", "500");
+                    }
+                    break;
+            }
+
+
+            await QueueJob(job, "durablejobs");
+
+            return View(model);
+        }
+
+
+        protected async Task QueueJob( JobModel model, string queue )
         {
             StorageHelper<JobModel> storage = new StorageHelper<JobModel>(_config);
 
-            JobModel job = new JobModel();
-            job.Id = model.Id;
-            job.Job = "Sleep";
-            job.Details = "Power sleeping";
-            job.Path = "XYZ";
-            job.Parameters = new System.Collections.Generic.Dictionary<string, string>();
-            job.Parameters.Add("Iterations", "100");
-            job.Parameters.Add("Delay", "500");
-
-            await storage.SaveToServiceBusQueue(job, "durablejobs");
-
-            return View(model);
+            await storage.SaveToServiceBusQueue(model, queue);
         }
 
         public IActionResult Privacy()

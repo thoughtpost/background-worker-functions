@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Thoughtpost.Azure\Thoughtpost.Azure.csproj" />
+    <ProjectReference Include="..\..\libraries\Thoughtpost.Background.Import\Thoughtpost.Background.Import.csproj" />
     <ProjectReference Include="..\..\libraries\Thoughtpost.Background\Thoughtpost.Background.csproj" />
   </ItemGroup>
 
