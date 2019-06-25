@@ -23,6 +23,7 @@
     <div id="progress@(Model.Id)" class="progress">
         <div id="bar@(Model.Id)" class="bar"></div>
     </div>
+    <div id="url@(Model.Id)"></div>
 </div>
 
 <script defer>
@@ -34,11 +35,19 @@ function obj@(Model.Id)() {
     self.ready = false;
     self.percent = @Model.Percent;
     self.message = '@(Model.Message)';
+    self.url = null;
 
         self.updateMessage = function () {
 
             var textelem = document.getElementById("message@(Model.Id)"); 
             textelem.innerHTML = self.message;
+
+            var urlelem = document.getElementById("url@(Model.Id)");
+            if (self.url) {
+                urlelem.innerHTML = "<a href='" + self.url + "' target='_blank'>Click here</a>";
+            } else {
+                urlelem.innerHTML = '';
+            }
         };
 
         self.updatePercent = function () {
@@ -53,9 +62,10 @@ function obj@(Model.Id)() {
             console.log(message);
 
             self.message = message.message;
+            self.url = message.url;
             self.updateMessage();
 
-            if (self.percent < message.percent) {
+            if (self.percent > message.percent) {
                 self.percent = message.percent;
                 self.updatePercent();
             } else {
@@ -95,6 +105,7 @@ function obj@(Model.Id)() {
                             .then((response) => {
                                 self.message = response.message;
                                 self.percent = response.percent;
+                                self.url = response.url;
 
                                 self.updateMessage();
                                 self.updatePercent();

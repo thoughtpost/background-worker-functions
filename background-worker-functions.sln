@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobsConsoleApp", "samples\J
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thoughtpost.Background.Tests", "tests\Thoughtpost.Background.Tests\Thoughtpost.Background.Tests.csproj", "{D508A61B-7740-4379-935B-2060FEC3497D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thoughtpost.Background.Import", "libraries\Thoughtpost.Background.Import\Thoughtpost.Background.Import.csproj", "{E3C0784A-2E31-4F93-A59E-77C5FCE650CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thoughtpost.Background.Import", "libraries\Thoughtpost.Background.Import\Thoughtpost.Background.Import.csproj", "{E3C0784A-2E31-4F93-A59E-77C5FCE650CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

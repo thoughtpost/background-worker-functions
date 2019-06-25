@@ -8,5 +8,6 @@ namespace JobsWeb.Models
     public class DemoModel
     {
         public string Id { get; set; }
+
     }
 }

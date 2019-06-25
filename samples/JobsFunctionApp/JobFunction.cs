@@ -57,45 +57,13 @@ namespace JobsFunctionApp
 
         [FunctionName("jobqueue")]
         public async static Task RunFromQueue(
-            [ServiceBusTrigger("jobs", Connection = "ServiceBusConnectionString")]string myQueueItem, 
+            [ServiceBusTrigger("jobs", Connection = "ServiceBusConnectionString")]string myQueueItem,
             ILogger log,
             ExecutionContext context)
         {
             JobModel model = JsonConvert.DeserializeObject<JobModel>(myQueueItem);
 
             await JobFunction.InternalRun(model, GetJob(model), log, context);
-        }
-
-        [FunctionName("RunDurableJob")]
-        public static async Task<ResponseModel> RunDurableJob(
-            [OrchestrationTrigger] DurableOrchestrationContext context,
-            ILogger log,
-            ExecutionContext execContext)
-        {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(execContext.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            JobModel model = JsonConvert.DeserializeObject<JobModel>(context.GetInput<string>());
-
-            ResponseModel response = await context.CallActivityAsync<ResponseModel>("RunJob", model);
-
-            return response;
-        }
-
-
-        [FunctionName("RunDurableJobFromQueue")]
-        public static async Task RunDurableJobFromQueue(
-            [ServiceBusTrigger("durablejobs", Connection = "ServiceBusConnectionString")]string myQueueItem,
-            [OrchestrationClient]DurableOrchestrationClient starter,
-            ILogger log,
-            ExecutionContext context)
-        {
-            string instanceId = await starter.StartNewAsync("RunDurableJob", myQueueItem);
-
-            log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
         }
 
         public async static Task<ResponseModel> InternalRun(JobModel model,
@@ -135,5 +103,51 @@ namespace JobsFunctionApp
 
             return response;
         }
+
+        public static IConfiguration GetConfiguration(ExecutionContext context)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(context.FunctionAppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+            return config;
+        }
+
+        [FunctionName("Countdown")]
+        public async static Task<ResponseModel> Countdown([ActivityTrigger] ResponseModel model, 
+            ILogger logger,
+            ExecutionContext context)
+        {
+            try
+            {
+                StatusRelay relay = new StatusRelay(GetConfiguration(context));
+                await relay.Initialize();
+
+                string details = model.Message;
+
+                int seconds = Int32.Parse( model.Value );
+                for ( int i = seconds; i > 0; i-- )
+                {
+                    ResponseModel cached = await relay.GetStatusAsync(model.Id);
+                    if (cached.Complete) return cached;
+
+                    model.Message = details + " (" + i.ToString() + " seconds remaining)";
+
+                    await relay.SendStatusAsync(model);
+
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message, ex);
+                logger.LogError(ex.StackTrace);
+            }
+
+            return model;
+        }
+
+
     }
 }

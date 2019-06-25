@@ -22,6 +22,8 @@ namespace Thoughtpost.Background
 
         public StatusCache Cache { get; set; }
 
+        public StatusRelayUpdateDelegate Update { get; set; }
+
         public StatusRelay(IConfiguration cfg)
         {
             this.config = cfg;
@@ -45,6 +47,14 @@ namespace Thoughtpost.Background
                     this.hubConnection = new HubConnectionBuilder()
                                     .WithUrl(url)
                                     .Build();
+
+                    this.hubConnection.On<ResponseModel>("statusRelayUpdate", (model) =>
+                    {
+                        if ( this.Update != null )
+                        {
+                            this.Update(model);
+                        }
+                    });
 
                     await hubConnection.StartAsync();
                 }
@@ -110,11 +120,19 @@ namespace Thoughtpost.Background
             }
         }
 
+        public async Task Subscribe(string id)
+        {
+            if (this.hubConnection != null)
+            {
+                await this.hubConnection.InvokeCoreAsync("subscribe", new object[] { id });
+            }
+        }
+
         public async Task SendStatusAsync(ResponseModel model)
         {
             await this.SetStatusAsync(model);
 
-            if ( this.hubConnection != null )
+            if (this.hubConnection != null)
             {
                 await this.hubConnection.InvokeCoreAsync("statusRelayUpdate", new object[] { model });
             }
@@ -134,5 +152,7 @@ namespace Thoughtpost.Background
                 this.hubConnection = null;
             }
         }
+
+        public delegate void StatusRelayUpdateDelegate(ResponseModel model);
     }
 }

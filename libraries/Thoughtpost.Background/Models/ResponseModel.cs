@@ -19,5 +19,7 @@ namespace Thoughtpost.Background.Models
         public string Result { get; set; }
         public int Percent { get; set; }
         public string Id { get; set; }
+
+        public string InstanceId { get; set; }
     }
 }

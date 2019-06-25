@@ -9,6 +9,7 @@ using JobsWeb.Models;
 using Microsoft.Extensions.Configuration;
 
 using Thoughtpost.Azure;
+
 using Thoughtpost.Background;
 using Thoughtpost.Background.Models;
 
@@ -37,11 +38,25 @@ namespace JobsWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(DemoModel model, string submit)
         {
+            string queue = "durablejobs";
+
             JobModel job = new JobModel();
             job.Id = model.Id;
 
             switch (submit)
             {
+                case "interactive":
+                    {
+                        job.Job = "Sleep";
+                        job.Details = "Fast sleeping";
+                        job.Parameters = new System.Collections.Generic.Dictionary<string, string>();
+                        job.Parameters.Add("Iterations", "10");
+                        job.Parameters.Add("Delay", "1000");
+
+                        queue = "interactivejobs";
+                    }
+                    break;
+
                 case "import":
                     {
                         job.Job = "Import";
@@ -63,11 +78,28 @@ namespace JobsWeb.Controllers
             }
 
 
-            await QueueJob(job, "durablejobs");
+            await QueueJob(job, queue);
 
             return View(model);
         }
 
+
+        public async Task<IActionResult> Approval(string id, string instanceId)
+        {
+            ResponseModel model = new ResponseModel() { InstanceId = instanceId, Id = id };
+
+            await QueueResponse(model, "humanapproval");
+
+            return View(model);
+        }
+
+
+        protected async Task QueueResponse(ResponseModel model, string queue)
+        {
+            StorageHelper<ResponseModel> storage = new StorageHelper<ResponseModel>(_config);
+
+            await storage.SaveToServiceBusQueue(model, queue);
+        }
 
         protected async Task QueueJob( JobModel model, string queue )
         {
