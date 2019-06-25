@@ -73,8 +73,13 @@ namespace Thoughtpost.Background.Import
 
                     await helper.SaveToTable<DynamicTableEntity>(item, "importdata");
                 }
+
+                response.Message = "Import complete";
+                response.Complete = true;
+                await relay.SendStatusAsync(response);
+
             }
-            catch( Exception ex )
+            catch ( Exception ex )
             {
                 response.Message = ex.Message;
                 response.Success = false;

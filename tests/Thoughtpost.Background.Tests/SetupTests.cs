@@ -52,5 +52,17 @@ namespace Thoughtpost.Background.Tests
             await account.DeleteBlobContainer("jobcache");
         }
 
+        [TestMethod]
+        public async Task ClearImportData()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            AccountHelper account = new AccountHelper(config);
+
+            await account.DeleteTable("importdata");
+        }
+
     }
 }

@@ -77,13 +77,16 @@ namespace Thoughtpost.Background.Import
 
                     response.Message = "Processing " + entity.RowKey + "...";
                     response.Percent = ipct;
-
                     await relay.SendStatusAsync(response);
 
                     await helper.SaveToTable<DynamicTableEntity>(entity, "importdata");
                 }
+
+                response.Message = "Import complete";
+                response.Complete = true;
+                await relay.SendStatusAsync(response);
             }
-            catch( Exception ex )
+            catch ( Exception ex )
             {
                 response.Message = ex.Message;
                 response.Success = false;

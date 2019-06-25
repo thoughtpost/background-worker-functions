@@ -109,12 +109,22 @@ namespace JobsWeb.Controllers
                     }
                     break;
 
+                case "longsleep":
+                    {
+                        job.Job = "Sleep";
+                        job.Details = "LONG sleeping";
+                        job.Parameters = new System.Collections.Generic.Dictionary<string, string>();
+                        job.Parameters.Add("Iterations", "30");
+                        job.Parameters.Add("Delay", "5000");
+                        await QueueJob(job, queue);
+                    }
+                    break;
+
                 case "sleep":
                 default:
                     {
                         job.Job = "Sleep";
-                        job.Details = "Power sleeping";
-                        job.Path = "XYZ";
+                        job.Details = "Normal sleeping";
                         job.Parameters = new System.Collections.Generic.Dictionary<string, string>();
                         job.Parameters.Add("Iterations", "100");
                         job.Parameters.Add("Delay", "500");
@@ -190,8 +200,16 @@ namespace JobsWeb.Controllers
 
                 am.Name = entity.GetValue("member_name").ToString();
                 am.BeforeImage = entity.GetValue("meetup_image").ToString();
-                am.AfterImageThumbnail = entity.GetValue("thumbnailimageurl").ToString();
-                am.AfterImage = entity.GetValue("contentimageurl").ToString();
+                if (entity.GetValue("thumbnailimageurl") != null )
+                {
+                    am.AfterImageThumbnail = entity.GetValue("thumbnailimageurl").ToString();
+                    am.AfterImage = entity.GetValue("contentimageurl").ToString();
+                }
+                else
+                {
+                    am.AfterImage = "https://image.flaticon.com/icons/png/512/55/55089.png";
+                    am.AfterImageThumbnail = "https://image.flaticon.com/icons/png/512/55/55089.png";
+                }
 
                 model.Attendees.Add(am);
             }
