@@ -79,8 +79,13 @@ namespace Thoughtpost.Azure
         }
 
 
-        public QueueClient GetQueueClient(string queueName)
+        public async Task<QueueClient> GetQueueClient(string queueName)
         {
+            var managementClient = new ManagementClient(ServiceBusConnectionString);
+            if (!(await managementClient.QueueExistsAsync(queueName)))
+            {
+                await managementClient.CreateQueueAsync(new QueueDescription(queueName));
+            }
             // Initialize the connection to Service Bus Queue
             QueueClient queueClient = new QueueClient(ServiceBusConnectionString, queueName);
 
@@ -102,6 +107,52 @@ namespace Thoughtpost.Azure
             table.CreateIfNotExistsAsync().Wait();
 
             return table;
+        }
+
+        public Microsoft.WindowsAzure.Storage.Queue.CloudQueue GetStorageQueue(string name)
+        {
+            Microsoft.WindowsAzure.Storage.CloudStorageAccount storageAccount = Microsoft.WindowsAzure.Storage.CloudStorageAccount.Parse(
+                StorageConnectionString);
+
+            ServicePoint tableServicePoint = ServicePointManager.FindServicePoint(storageAccount.TableEndpoint);
+            tableServicePoint.UseNagleAlgorithm = false;
+
+            Microsoft.WindowsAzure.Storage.Queue.CloudQueueClient client = storageAccount.CreateCloudQueueClient();
+
+            CloudQueue queue = client.GetQueueReference(name);
+            queue.CreateIfNotExistsAsync().Wait();
+
+            return queue;
+        }
+
+        public async Task DeleteTable(string tableName)
+        {
+            CloudTable table = GetTable(tableName);
+
+            await table.DeleteIfExistsAsync();
+        }
+
+        public async Task DeleteBlobContainer(string containerName)
+        {
+            CloudBlobContainer container = GetBlobContainer(containerName);
+
+            await container.DeleteIfExistsAsync();
+        }
+
+        public async Task DeleteStorageQueue(string queueName)
+        {
+            CloudQueue table = GetStorageQueue(queueName);
+
+            await table.DeleteIfExistsAsync();
+        }
+
+        public async Task DeleteQueue(string queueName)
+        {
+            var managementClient = new ManagementClient(ServiceBusConnectionString);
+            if ((await managementClient.QueueExistsAsync(queueName)))
+            {
+                await managementClient.DeleteQueueAsync(queueName);
+            }
         }
     }
 }

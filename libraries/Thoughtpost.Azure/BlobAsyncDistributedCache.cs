@@ -10,13 +10,18 @@ namespace Thoughtpost.Azure
 {
     public class BlobAsyncDistributedCache<T> : IDistributedCache where T : new()
     {
+        public BlobAsyncDistributedCache(IConfiguration config)
+        {
+            this._helper = new StorageHelper<T>(config);
+        }
+
         public BlobAsyncDistributedCache(string container, IConfiguration config)
         {
             this._container = container;
             this._helper = new StorageHelper<T>(config);
         }
 
-        protected string _container = "cache";
+        protected string _container = "jobcache";
         protected StorageHelper<T> _helper;
 
         public byte[] Get(string key)

@@ -45,6 +45,12 @@ namespace JobsFunctionApp
                     }
                     break;
 
+                case "images":
+                    {
+                        job = new Thoughtpost.Background.Import.ImportImageSearchJob();
+                    }
+                    break;
+
                 default:
                     {
                         job = new SleepJob();

@@ -12,4 +12,5 @@ namespace Thoughtpost.Background.Models
         public string Path { get; set; }
         public Dictionary<string, string> Parameters { get; set; }
     }
+
 }

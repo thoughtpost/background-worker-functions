@@ -1,0 +1,37 @@
+﻿@model JobsWeb.Models.DemoModel
+
+@{
+    ViewData["Title"] = "Before And After...";
+}
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", name = "thisform" }))
+{
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="text-center">
+        <h1 class="display-4">Before and After</h1>
+        <p>A shocking look into the long term effects of coding...</p>
+    </div>
+}
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Before</th>
+                <th>After</th>
+            </tr>
+        </thead>
+            <tbody>
+@foreach( var attendee in Model.Attendees )
+{
+                <tr>
+                    <td><h2>@attendee.Name</h2></td>
+                    <td><img width="250px" height="250px" src="@attendee.BeforeImage" /></td>
+                    <td><img src="@attendee.AfterImageThumbnail" /></td>
+                </tr>
+}
+            </tbody>
+    </table>
+</div>
+

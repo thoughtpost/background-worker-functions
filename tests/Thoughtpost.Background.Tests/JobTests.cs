@@ -45,7 +45,7 @@ namespace Thoughtpost.Background.Tests
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            BlobAsyncDistributedCache<ResponseModel> dc = new BlobAsyncDistributedCache<ResponseModel>("cache",
+            BlobAsyncDistributedCache<ResponseModel> dc = new BlobAsyncDistributedCache<ResponseModel>(
                 config);
 
             StatusCache cache = new StatusCache(dc);
@@ -64,7 +64,7 @@ namespace Thoughtpost.Background.Tests
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            BlobAsyncDistributedCache<ResponseModel> dc = new BlobAsyncDistributedCache<ResponseModel>("cache",
+            BlobAsyncDistributedCache<ResponseModel> dc = new BlobAsyncDistributedCache<ResponseModel>(
                 config);
 
             StatusCache cache = new StatusCache(dc);

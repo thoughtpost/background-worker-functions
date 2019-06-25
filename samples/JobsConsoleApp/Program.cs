@@ -21,7 +21,7 @@ namespace JobsConsoleApp
         {
             Program.Model = model;
 
-            Console.WriteLine(model.Message);
+            Console.Write("\r{0} - {1}%   ", model.Message, model.Percent );
         }
 
         async static Task Main(string[] args)
@@ -58,6 +58,17 @@ namespace JobsConsoleApp
             {
                 System.Threading.Thread.Sleep(1000);
             }
+
+            if ( Model.Success )
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+
+            Console.Write("\r{0} - {1}%   ", Model.Message, Model.Percent);
         }
     }
 }

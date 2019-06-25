@@ -9,5 +9,6 @@ namespace JobsWeb.Models
     {
         public string Id { get; set; }
 
+        public List<AttendeeModel> Attendees { get; set; }
     }
 }

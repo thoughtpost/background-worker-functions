@@ -3,6 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "CognitiveServicesKey": "",
     "StatusRelayUrl": "https://localhost:44309/background",
     "StatusRelayHub": "background",
     "RedisConnectionString": "",

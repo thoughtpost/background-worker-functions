@@ -156,5 +156,14 @@ namespace Thoughtpost.Azure
                 default: return typeof(string);
             }
         }
+
+
+        public object GetValue(string property)
+        {
+            EntityProperty prop = this[property] as EntityProperty;
+
+            return GetValue(prop);
+        }
+
     }
 }

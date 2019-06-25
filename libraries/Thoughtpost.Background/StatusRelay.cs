@@ -80,7 +80,7 @@ namespace Thoughtpost.Background
 
                     //IDistributedCache dc = new RedisCache(options);
 
-                    BlobAsyncDistributedCache<ResponseModel> dc = new BlobAsyncDistributedCache<ResponseModel>("cache",
+                    BlobAsyncDistributedCache<ResponseModel> dc = new BlobAsyncDistributedCache<ResponseModel>(
                         this.config);
                     this.Cache = new StatusCache(dc);
                 }

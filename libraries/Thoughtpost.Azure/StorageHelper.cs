@@ -36,7 +36,7 @@ namespace Thoughtpost.Azure
 
         public async Task SaveToServiceBusQueue(T entity, string queueName)
         {
-            QueueClient client = Account.GetQueueClient(queueName);
+            QueueClient client = await Account.GetQueueClient(queueName);
 
             await SaveToServiceBusQueue(entity, client);
         }
